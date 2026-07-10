@@ -1,0 +1,6 @@
+{
+  "name": "College Library Management System",
+  "description": "A modern, blue-and-white themed full-featured Library Management System for colleges with QR login, dashboard, e-books, physical book tracking, checkouts, and admin forms.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
