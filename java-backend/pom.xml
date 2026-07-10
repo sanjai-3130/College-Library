@@ -11,7 +11,7 @@
     <artifactId>library-system-backend</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <name>Athena State Library Backend</name>
-    <description>Enterprise Java Spring Boot Backend for Athena State Library Management System</description>
+    <description>Enterprise Java Spring Boot Backend for Athena State Library Management System (In-Memory Architecture)</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -25,21 +25,10 @@
     </properties>
 
     <dependencies>
-        <!-- Spring Boot Starters -->
+        <!-- Spring Boot Starter Web (for REST APIs) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-
-        <!-- Database (In-Memory H2 for seamless enterprise setup) -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
         </dependency>
 
         <!-- Boilerplate reducer (Lombok) -->

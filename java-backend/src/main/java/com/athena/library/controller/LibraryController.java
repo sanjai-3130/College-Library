@@ -1,11 +1,9 @@
 /**
  * SPDX-License-Identifier: Apache-2.0
  */
-
 package com.athena.library.controller;
 
 import com.athena.library.model.*;
-import com.athena.library.repository.*;
 import com.athena.library.service.LibraryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,19 +18,10 @@ import java.util.Map;
 public class LibraryController {
 
     private final LibraryService libraryService;
-    private final BookRepository bookRepository;
-    private final CheckoutRepository checkoutRepository;
-    private final LibraryNotificationRepository notificationRepository;
 
     @Autowired
-    public LibraryController(LibraryService libraryService,
-                             BookRepository bookRepository,
-                             CheckoutRepository checkoutRepository,
-                             LibraryNotificationRepository notificationRepository) {
+    public LibraryController(LibraryService libraryService) {
         this.libraryService = libraryService;
-        this.bookRepository = bookRepository;
-        this.checkoutRepository = checkoutRepository;
-        this.notificationRepository = notificationRepository;
     }
 
     // --- AUTHENTICATION ---
@@ -63,7 +52,7 @@ public class LibraryController {
 
     @GetMapping("/books")
     public ResponseEntity<List<Book>> getAllBooks() {
-        return ResponseEntity.ok(bookRepository.findAll());
+        return ResponseEntity.ok(libraryService.getAllBooks());
     }
 
     @PostMapping("/books")
@@ -76,12 +65,12 @@ public class LibraryController {
 
     @GetMapping("/checkouts")
     public ResponseEntity<List<Checkout>> getAllCheckouts() {
-        return ResponseEntity.ok(checkoutRepository.findAll());
+        return ResponseEntity.ok(libraryService.getAllCheckouts());
     }
 
     @GetMapping("/checkouts/student/{studentId}")
     public ResponseEntity<List<Checkout>> getStudentCheckouts(@PathVariable String studentId) {
-        return ResponseEntity.ok(checkoutRepository.findByStudentId(studentId.toUpperCase()));
+        return ResponseEntity.ok(libraryService.getCheckoutsByStudent(studentId));
     }
 
     @PostMapping("/checkouts/issue")
@@ -130,21 +119,22 @@ public class LibraryController {
 
     @GetMapping("/notifications")
     public ResponseEntity<List<LibraryNotification>> getNotifications() {
-        return ResponseEntity.ok(notificationRepository.findAllByOrderByDateDesc());
+        return ResponseEntity.ok(libraryService.getAllNotifications());
     }
 
     @PostMapping("/notifications/{id}/read")
     public ResponseEntity<?> markRead(@PathVariable String id) {
-        return notificationRepository.findById(id).map(notif -> {
-            notif.setRead(true);
-            notificationRepository.save(notif);
+        boolean updated = libraryService.markNotificationRead(id);
+        if (updated) {
             return ResponseEntity.ok().build();
-        }).orElse(ResponseEntity.notFound().build());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/notifications/all")
     public ResponseEntity<?> clearNotifications() {
-        notificationRepository.deleteAll();
+        libraryService.clearAllNotifications();
         return ResponseEntity.ok().build();
     }
 
