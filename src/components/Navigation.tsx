@@ -177,7 +177,7 @@ export const Navigation: React.FC = () => {
                 className="w-10 h-10 rounded-full object-cover ring-2 ring-blue-500/30" 
               />
               <span className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-brand-900 ${
-                currentUser.role === 'admin' ? 'bg-emerald-400' : 'bg-green-400'
+                currentUser.role === 'admin' ? 'bg-indigo-400' : currentUser.role === 'staff' ? 'bg-amber-400' : 'bg-green-400'
               }`}></span>
             </div>
             {!isCollapsed && (
@@ -185,8 +185,12 @@ export const Navigation: React.FC = () => {
                 <p className="text-xs font-bold text-white truncate leading-tight">{currentUser.name}</p>
                 <div className="flex items-center gap-1 mt-0.5">
                   {currentUser.role === 'admin' ? (
-                    <span className="text-[9px] font-bold text-emerald-300 bg-emerald-500/10 px-1.5 py-0.5 rounded-md flex items-center gap-0.5 uppercase tracking-wide shrink-0">
-                      <ShieldAlert className="h-2.5 w-2.5" /> Staff
+                    <span className="text-[9px] font-bold text-indigo-300 bg-indigo-500/10 px-1.5 py-0.5 rounded-md flex items-center gap-0.5 uppercase tracking-wide shrink-0">
+                      <ShieldAlert className="h-2.5 w-2.5" /> Admin
+                    </span>
+                  ) : currentUser.role === 'staff' ? (
+                    <span className="text-[9px] font-bold text-amber-300 bg-amber-500/10 px-1.5 py-0.5 rounded-md flex items-center gap-0.5 uppercase tracking-wide shrink-0">
+                      👨🏫 Staff
                     </span>
                   ) : (
                     <span className="text-[9px] font-bold text-blue-300 bg-blue-500/10 px-1.5 py-0.5 rounded-md flex items-center gap-0.5 uppercase tracking-wide shrink-0">
@@ -249,7 +253,7 @@ export const Navigation: React.FC = () => {
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-green-400"></div>
                 <span className="text-sm font-medium">
-                  {currentUser.role === 'admin' ? 'Senior Administrator' : 'Platinum Student'}
+                  {currentUser.role === 'admin' ? 'Senior Administrator' : currentUser.role === 'staff' ? 'Faculty Staff' : 'Platinum Student'}
                 </span>
               </div>
             </div>

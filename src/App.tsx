@@ -76,6 +76,10 @@ const MainPortalLayout: React.FC = () => {
               <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-1 rounded-md flex items-center gap-1 uppercase tracking-wider border border-indigo-100 font-mono">
                 <ShieldCheck className="h-3 w-3" /> Secure Staff Session
               </span>
+            ) : currentUser.role === 'staff' ? (
+              <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-1 rounded-md flex items-center gap-1 uppercase tracking-wider border border-amber-100 font-mono">
+                <ShieldCheck className="h-3.5 w-3.5" /> Faculty Access Portal
+              </span>
             ) : (
               <span className="text-[10px] font-bold text-brand-700 bg-brand-50 px-2 py-1 rounded-md flex items-center gap-1 uppercase tracking-wider border border-brand-100 font-mono">
                 <GraduationCap className="h-3.5 w-3.5" /> Student Access Portal

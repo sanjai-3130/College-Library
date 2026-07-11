@@ -50,8 +50,19 @@ export interface User {
   semester: string;
   avatarUrl: string;
   qrCodeData: string;
-  role: 'student' | 'admin';
+  role: 'student' | 'staff' | 'admin';
   cardIssueDate: string;
+}
+
+export interface BookRequest {
+  id: string;
+  userId: string;
+  userName: string;
+  userRole: 'student' | 'staff';
+  bookTitle: string;
+  bookAuthor: string;
+  requestDate: string;
+  status: 'pending' | 'approved' | 'rejected';
 }
 
 export interface LibraryNotification {

@@ -4,7 +4,7 @@
  */
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Book, Checkout, User, LibraryNotification } from '../types';
+import { Book, Checkout, User, LibraryNotification, BookRequest } from '../types';
 import { INITIAL_BOOKS, INITIAL_CHECKOUTS, INITIAL_USER, INITIAL_NOTIFICATIONS } from '../data/initialData';
 
 interface LibraryContextType {
@@ -14,10 +14,12 @@ interface LibraryContextType {
   notifications: LibraryNotification[];
   activeView: string;
   setActiveView: (view: string) => void;
-  login: (studentId: string, role?: 'student' | 'admin') => boolean;
+  login: (userId: string, role?: 'student' | 'staff' | 'admin') => boolean;
   loginWithQR: (qrData: string) => boolean;
   logout: () => void;
   addBook: (book: Omit<Book, 'id'>) => Book;
+  editBook: (book: Book) => void;
+  deleteBook: (bookId: string) => void;
   issueBook: (bookId: string, studentId: string) => { success: boolean; message: string };
   returnBook: (checkoutId: string) => { success: boolean; message: string };
   renewBook: (checkoutId: string) => { success: boolean; message: string };
@@ -25,6 +27,18 @@ interface LibraryContextType {
   markNotificationRead: (id: string) => void;
   clearAllNotifications: () => void;
   updateBookProgress: (bookId: string, progress: number) => void;
+  
+  // Book Requests
+  bookRequests: BookRequest[];
+  addBookRequest: (bookTitle: string, bookAuthor: string) => void;
+  approveBookRequest: (id: string) => void;
+  rejectBookRequest: (id: string) => void;
+
+  // Manage Students and Staff
+  usersList: User[];
+  addUser: (userData: Omit<User, 'id'>) => User;
+  editUser: (userData: User) => void;
+  deleteUser: (userId: string) => void;
 }
 
 const LibraryContext = createContext<LibraryContextType | undefined>(undefined);
@@ -52,6 +66,99 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [notifications, setNotifications] = useState<LibraryNotification[]>(() => {
     const saved = localStorage.getItem('lib_notifications');
     return saved ? JSON.parse(saved) : INITIAL_NOTIFICATIONS;
+  });
+
+  const [bookRequests, setBookRequests] = useState<BookRequest[]>(() => {
+    const saved = localStorage.getItem('lib_book_requests');
+    if (saved) return JSON.parse(saved);
+    return [
+      {
+        id: 'REQ-1',
+        userId: 'CS-2024-4091',
+        userName: 'Alex Mercer',
+        userRole: 'student',
+        bookTitle: 'Artificial Intelligence: A Modern Approach',
+        bookAuthor: 'Stuart Russell, Peter Norvig',
+        requestDate: '2026-07-09',
+        status: 'pending'
+      },
+      {
+        id: 'REQ-2',
+        userId: 'STF-5001',
+        userName: 'Prof. Alan Turing',
+        userRole: 'staff',
+        bookTitle: 'Compilers: Principles, Techniques, and Tools',
+        bookAuthor: 'Alfred V. Aho',
+        requestDate: '2026-07-10',
+        status: 'approved'
+      }
+    ];
+  });
+
+  const [usersList, setUsersList] = useState<User[]>(() => {
+    const saved = localStorage.getItem('lib_users_list');
+    return saved ? JSON.parse(saved) : [
+      {
+        id: 'U101',
+        name: 'Alex Mercer',
+        email: 'alex.mercer@college.edu',
+        studentId: 'CS-2024-4091',
+        department: 'Computer Science & Engineering',
+        semester: '6th Semester',
+        avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
+        qrCodeData: '',
+        role: 'student',
+        cardIssueDate: '2024-08-15'
+      },
+      {
+        id: 'U102',
+        name: 'Rohan Sharma',
+        email: 'rohan.sharma@college.edu',
+        studentId: 'MECH-2025-1002',
+        department: 'Mechanical Engineering',
+        semester: '4th Semester',
+        avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
+        qrCodeData: '',
+        role: 'student',
+        cardIssueDate: '2025-01-10'
+      },
+      {
+        id: 'U103',
+        name: 'Priya Patel',
+        email: 'priya.patel@college.edu',
+        studentId: 'ECE-2024-1003',
+        department: 'Electronics & Communication',
+        semester: '8th Semester',
+        avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80',
+        qrCodeData: '',
+        role: 'student',
+        cardIssueDate: '2024-07-22'
+      },
+      {
+        id: 'U201',
+        name: 'Prof. Alan Turing',
+        email: 'alan.turing@college.edu',
+        studentId: 'STF-5001',
+        department: 'Computer Science',
+        semester: 'Senior Lecturer',
+        avatarUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80',
+        qrCodeData: '',
+        role: 'staff',
+        cardIssueDate: '2022-06-15'
+      },
+      {
+        id: 'U202',
+        name: 'Dr. Marie Curie',
+        email: 'marie.curie@college.edu',
+        studentId: 'STF-5002',
+        department: 'Physics & Chemistry',
+        semester: 'Associate Professor',
+        avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80',
+        qrCodeData: '',
+        role: 'staff',
+        cardIssueDate: '2021-09-01'
+      }
+    ];
   });
 
   const [activeView, setActiveView] = useState<string>(() => {
@@ -82,11 +189,18 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     localStorage.setItem('lib_notifications', JSON.stringify(notifications));
   }, [notifications]);
 
-  const login = (studentId: string, role: 'student' | 'admin' = 'student'): boolean => {
-    // Normal user login simulation
-    if (studentId.trim() === '') return false;
+  useEffect(() => {
+    localStorage.setItem('lib_book_requests', JSON.stringify(bookRequests));
+  }, [bookRequests]);
+
+  useEffect(() => {
+    localStorage.setItem('lib_users_list', JSON.stringify(usersList));
+  }, [usersList]);
+
+  const login = (userId: string, role: 'student' | 'staff' | 'admin' = 'student'): boolean => {
+    if (userId.trim() === '') return false;
     
-    const formattedId = studentId.toUpperCase();
+    const formattedId = userId.toUpperCase();
     
     let name = 'Alex Mercer';
     let department = 'Computer Science & Engineering';
@@ -99,34 +213,46 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       semester = 'Staff Coordinator';
       avatarUrl = 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80';
     } else {
-      if (formattedId.includes('MECH') || formattedId.includes('1002')) {
-        name = 'Rohan Sharma';
-        department = 'Mechanical Engineering';
-        semester = '4th Semester';
-        avatarUrl = 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80';
-      } else if (formattedId.includes('ECE') || formattedId.includes('1003')) {
-        name = 'Priya Patel';
-        department = 'Electronics & Communication';
-        semester = '8th Semester';
-        avatarUrl = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80';
+      const found = usersList.find(u => u.studentId.toUpperCase() === formattedId && u.role === role);
+      if (found) {
+        name = found.name;
+        department = found.department;
+        semester = found.semester;
+        avatarUrl = found.avatarUrl;
+      } else {
+        if (role === 'staff') {
+          name = 'Prof. Staff Member';
+          department = 'Engineering';
+          semester = 'Senior Lecturer';
+          avatarUrl = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80';
+        } else {
+          name = 'Guest Student';
+          department = 'Information Technology';
+          semester = '4th Semester';
+          avatarUrl = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80';
+        }
       }
     }
 
     const newUser: User = {
-      ...INITIAL_USER,
+      id: `U_${role}_${formattedId}`,
       studentId: formattedId,
       name: name,
+      email: `${name.toLowerCase().replace(/\s+/g, '.')}@college.edu`,
       role: role,
       department: department,
       semester: semester,
       avatarUrl: avatarUrl,
+      cardIssueDate: '2024-08-15',
       qrCodeData: JSON.stringify({
-        studentId: `STU-${formattedId}`,
+        studentId: formattedId,
         regNo: formattedId,
         name: name,
-        dept: department,
-        year: semester === '4th Semester' ? '2nd Year' : semester === '8th Semester' ? '4th Year' : '3rd Year',
-        timestamp: Date.now()
+        department: department,
+        year: semester.includes('Semester') 
+          ? (semester.includes('1st') || semester.includes('2nd') ? '1st Year' : semester.includes('3rd') || semester.includes('4th') ? '2nd Year' : semester.includes('5th') || semester.includes('6th') ? '3rd Year' : '4th Year')
+          : 'Faculty Staff',
+        refreshedAt: new Date().toISOString()
       })
     };
     
@@ -137,35 +263,20 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const loginWithQR = (qrData: string): boolean => {
     if (!qrData) return false;
     
-    // Simulate login based on scanned student card QR code
-    // Example QR data: "STU-ALEX-MERCER-CS20244091" or "STU-ADMIN-CS-ADMIN-001"
-    const isAdmin = qrData.includes('ADMIN');
-    const parts = qrData.split('-');
-    const studentId = parts[parts.length - 1] || 'CS-2024-4091';
-    
-    const newUser: User = {
-      ...INITIAL_USER,
-      studentId: studentId,
-      name: isAdmin ? 'Dr. Elizabeth Vance' : 'Alex Mercer',
-      role: isAdmin ? 'admin' : 'student',
-      department: isAdmin ? 'Library Administration' : 'Computer Science & Engineering',
-      qrCodeData: qrData
-    };
-    
-    setCurrentUser(newUser);
-    
-    // Add login notification
-    const newNotif: LibraryNotification = {
-      id: `N_IN_${Date.now()}`,
-      title: 'Login Successful',
-      message: `Successfully authenticated via Digital Student Card QR Code. Welcome back, ${newUser.name}!`,
-      date: new Date().toISOString().split('T')[0],
-      type: 'success',
-      read: false
-    };
-    setNotifications(prev => [newNotif, ...prev]);
-    
-    return true;
+    try {
+      const parsed = JSON.parse(qrData);
+      const studentId = parsed.studentId || parsed.regNo || 'CS-2024-4091';
+      const role = qrData.includes('STF') || qrData.toLowerCase().includes('faculty') || (parsed.year && parsed.year.includes('Faculty')) ? 'staff' : 'student';
+      
+      return login(studentId, role);
+    } catch (e) {
+      const isStaff = qrData.includes('STF') || qrData.includes('STF-') || qrData.includes('STF_');
+      const isAdmin = qrData.includes('ADMIN');
+      const role = isAdmin ? 'admin' : (isStaff ? 'staff' : 'student');
+      const parts = qrData.split('-');
+      const studentId = parts[parts.length - 1] || 'CS-2024-4091';
+      return login(studentId, role);
+    }
   };
 
   const logout = () => {
@@ -196,6 +307,14 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return newBook;
   };
 
+  const editBook = (updatedBook: Book) => {
+    setBooks(prev => prev.map(b => b.id === updatedBook.id ? updatedBook : b));
+  };
+
+  const deleteBook = (bookId: string) => {
+    setBooks(prev => prev.filter(b => b.id !== bookId));
+  };
+
   const issueBook = (bookId: string, studentId: string): { success: boolean; message: string } => {
     const book = books.find(b => b.id === bookId);
     if (!book) {
@@ -210,15 +329,6 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return { success: false, message: 'All physical copies are currently checked out.' };
     }
 
-    // Check if student already has this book issued
-    const alreadyIssued = checkouts.some(c => c.bookId === bookId && c.status !== 'returned' && c.status !== 'overdue' && c.id !== 'fake'); // skip finished checkouts
-    const activeCheckoutsForBook = checkouts.filter(c => c.bookId === bookId && (c.status === 'active' || c.status === 'overdue' || c.status === 'renewed'));
-    
-    if (activeCheckoutsForBook.length > 0) {
-      // Allow multi checkouts for simulation if they want, but let's warn or prevent duplicate checkout of same book for same user
-    }
-
-    // Issue Book
     const today = new Date();
     const dueDate = new Date();
     dueDate.setDate(today.getDate() + 14); // 14 days loan period
@@ -237,7 +347,6 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       progress: 0
     };
 
-    // Update copies
     setBooks(prev => prev.map(b => {
       if (b.id === bookId) {
         return { ...b, copiesAvailable: (b.copiesAvailable || 1) - 1 };
@@ -247,11 +356,10 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     setCheckouts(prev => [newCheckout, ...prev]);
 
-    // Notification
     const newNotif: LibraryNotification = {
       id: `N_ISS_${Date.now()}`,
       title: 'Book Issued Successfully',
-      message: `"${book.title}" has been issued to student ${studentId}. Due date: ${newCheckout.dueDate}.`,
+      message: `"${book.title}" has been issued to user ${studentId}. Due date: ${newCheckout.dueDate}.`,
       date: today.toISOString().split('T')[0],
       type: 'success',
       read: false
@@ -273,7 +381,6 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     const today = new Date().toISOString().split('T')[0];
 
-    // Update checkout
     setCheckouts(prev => prev.map(c => {
       if (c.id === checkoutId) {
         return {
@@ -286,7 +393,6 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return c;
     }));
 
-    // Return copy to available shelf
     setBooks(prev => prev.map(b => {
       if (b.id === checkout.bookId) {
         return {
@@ -297,7 +403,6 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return b;
     }));
 
-    // Notification
     const newNotif: LibraryNotification = {
       id: `N_RET_${Date.now()}`,
       title: 'Book Returned',
@@ -325,7 +430,6 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return { success: false, message: 'Cannot renew an overdue book. Please clear outstanding fines first.' };
     }
 
-    // Extend due date by 7 days
     const currentDue = new Date(checkout.dueDate);
     currentDue.setDate(currentDue.getDate() + 7);
     const newDueDate = currentDue.toISOString().split('T')[0];
@@ -341,7 +445,6 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return c;
     }));
 
-    // Notification
     const newNotif: LibraryNotification = {
       id: `N_REN_${Date.now()}`,
       title: 'Due Date Extended',
@@ -370,13 +473,12 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
         return {
           ...c,
           fineAmount: 0,
-          status: c.status === 'overdue' ? 'active' : c.status // revert status if still active
+          status: c.status === 'overdue' ? 'active' : c.status
         };
       }
       return c;
     }));
 
-    // Notification
     const newNotif: LibraryNotification = {
       id: `N_PAY_${Date.now()}`,
       title: 'Fine Paid Successfully',
@@ -399,7 +501,6 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const updateBookProgress = (bookId: string, progress: number) => {
-    // For e-books progress
     setBooks(prev => prev.map(b => {
       if (b.id === bookId) {
         return { ...b, readProgress: progress };
@@ -407,13 +508,101 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return b;
     }));
 
-    // If it is also an active checkout
     setCheckouts(prev => prev.map(c => {
       if (c.bookId === bookId && c.status !== 'returned') {
         return { ...c, progress: progress };
       }
       return c;
     }));
+  };
+
+  // Book Requests
+  const addBookRequest = (bookTitle: string, bookAuthor: string) => {
+    if (!currentUser) return;
+    const newReq: BookRequest = {
+      id: `REQ-${Date.now()}`,
+      userId: currentUser.studentId,
+      userName: currentUser.name,
+      userRole: currentUser.role === 'staff' ? 'staff' : 'student',
+      bookTitle,
+      bookAuthor,
+      requestDate: new Date().toISOString().split('T')[0],
+      status: 'pending'
+    };
+    setBookRequests(prev => [newReq, ...prev]);
+
+    const newNotif: LibraryNotification = {
+      id: `N_REQ_${Date.now()}`,
+      title: 'New Book Requested',
+      message: `"${bookTitle}" has been requested by ${currentUser.name} (${currentUser.role}).`,
+      date: new Date().toISOString().split('T')[0],
+      type: 'info',
+      read: false
+    };
+    setNotifications(prev => [newNotif, ...prev]);
+  };
+
+  const approveBookRequest = (id: string) => {
+    setBookRequests(prev => prev.map(req => {
+      if (req.id === id) {
+        const userNotif: LibraryNotification = {
+          id: `N_REQA_${Date.now()}`,
+          title: 'Book Request Approved',
+          message: `Your request for "${req.bookTitle}" has been approved by the Administrator.`,
+          date: new Date().toISOString().split('T')[0],
+          type: 'success',
+          read: false
+        };
+        setNotifications(prevNotifs => [userNotif, ...prevNotifs]);
+        return { ...req, status: 'approved' };
+      }
+      return req;
+    }));
+  };
+
+  const rejectBookRequest = (id: string) => {
+    setBookRequests(prev => prev.map(req => {
+      if (req.id === id) {
+        const userNotif: LibraryNotification = {
+          id: `N_REQR_${Date.now()}`,
+          title: 'Book Request Rejected',
+          message: `Your request for "${req.bookTitle}" was not approved by the Administrator.`,
+          date: new Date().toISOString().split('T')[0],
+          type: 'alert',
+          read: false
+        };
+        setNotifications(prevNotifs => [userNotif, ...prevNotifs]);
+        return { ...req, status: 'rejected' };
+      }
+      return req;
+    }));
+  };
+
+  // Manage students & staff
+  const addUser = (userData: Omit<User, 'id'>): User => {
+    const newId = `U${Date.now()}`;
+    const newUser: User = {
+      ...userData,
+      id: newId,
+      qrCodeData: JSON.stringify({
+        studentId: userData.studentId,
+        regNo: userData.studentId,
+        name: userData.name,
+        department: userData.department,
+        year: userData.semester,
+        refreshedAt: new Date().toISOString()
+      })
+    };
+    setUsersList(prev => [newUser, ...prev]);
+    return newUser;
+  };
+
+  const editUser = (updatedUser: User) => {
+    setUsersList(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
+  };
+
+  const deleteUser = (userId: string) => {
+    setUsersList(prev => prev.filter(u => u.id !== userId));
   };
 
   return (
@@ -428,13 +617,23 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       loginWithQR,
       logout,
       addBook,
+      editBook,
+      deleteBook,
       issueBook,
       returnBook,
       renewBook,
       payFine,
       markNotificationRead,
       clearAllNotifications,
-      updateBookProgress
+      updateBookProgress,
+      bookRequests,
+      addBookRequest,
+      approveBookRequest,
+      rejectBookRequest,
+      usersList,
+      addUser,
+      editUser,
+      deleteUser
     }}>
       {children}
     </LibraryContext.Provider>
