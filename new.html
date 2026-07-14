@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D Student Information Card</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(135deg,#0f172a,#1e3a8a,#312e81);
+overflow:hidden;
+position:relative;
+}
+
+body::before{
+content:"";
+position:absolute;
+width:350px;
+height:350px;
+background:#00e5ff55;
+border-radius:50%;
+filter:blur(100px);
+top:-80px;
+left:-80px;
+animation:move1 10s infinite alternate;
+pointer-events:none;
+}
+
+body::after{
+content:"";
+position:absolute;
+width:300px;
+height:300px;
+background:#7c3aed55;
+border-radius:50%;
+filter:blur(100px);
+right:-80px;
+bottom:-80px;
+animation:move2 10s infinite alternate;
+pointer-events:none;
+}
+
+@keyframes move1{
+to{
+transform:translate(120px,80px);
+}
+}
+
+@keyframes move2{
+to{
+transform:translate(-120px,-80px);
+}
+}
+
+.container{
+perspective:1200px;
+z-index: 10;
+}
+
+.card{
+width:420px;
+padding:30px;
+border-radius:25px;
+background:rgba(255,255,255,.08);
+backdrop-filter:blur(18px);
+border:1px solid rgba(255,255,255,.15);
+box-shadow:
+0 20px 50px rgba(0,0,0,.45),
+0 0 35px rgba(0,255,255,.2);
+transform-style:preserve-3d;
+transition:.15s;
+animation:float 5s ease-in-out infinite;
+}
+
+@keyframes float{
+0%,100%{
+transform:translateY(0px);
+}
+50%{
+transform:translateY(-12px);
+}
+}
+
+.logo{
+text-align:center;
+font-size:28px;
+font-weight:700;
+color:white;
+}
+
+.logo span{
+color:#38bdf8;
+}
+
+.photo{
+width:120px;
+height:120px;
+margin:25px auto;
+border-radius:50%;
+overflow:hidden;
+border:5px solid #38bdf8;
+box-shadow:0 0 25px #38bdf8;
+background: rgba(15, 23, 42, 0.4);
+}
+
+.photo img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.verify{
+margin:10px auto 25px;
+width:max-content;
+padding:8px 18px;
+background:#10b981;
+color:white;
+border-radius:50px;
+font-size:14px;
+font-weight:600;
+box-shadow:0 0 18px #10b981;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+}
+
+.info{
+display:flex;
+justify-content:space-between;
+padding:13px 0;
+border-bottom:1px solid rgba(255,255,255,.15);
+color:white;
+transition:.3s;
+}
+
+.info:hover{
+padding-left:10px;
+background:rgba(255,255,255,.05);
+}
+
+.label{
+color:#cbd5e1;
+font-size:14px;
+}
+
+.value{
+font-weight:600;
+text-align:right;
+}
+
+.qr{
+margin-top:25px;
+display:flex;
+justify-content:center;
+}
+
+.qr img{
+width:130px;
+border-radius:15px;
+background:white;
+padding:8px;
+}
+
+.footer{
+margin-top:15px;
+text-align:center;
+color:#cbd5e1;
+font-size:13px;
+}
+
+/* Back Button */
+.back-btn {
+position: absolute;
+top: 20px;
+left: 20px;
+padding: 10px 20px;
+border-radius: 30px;
+background: rgba(255, 255, 255, 0.1);
+border: 1px solid rgba(255, 255, 255, 0.2);
+color: white;
+font-weight: 500;
+text-decoration: none;
+font-size: 14px;
+transition: all 0.2s;
+z-index: 100;
+display: flex;
+align-items: center;
+gap: 8px;
+backdrop-filter: blur(10px);
+}
+
+.back-btn:hover {
+background: rgba(255, 255, 255, 0.2);
+transform: translateX(-3px);
+box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<a href="/" class="back-btn">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+  Back to Portal
+</a>
+
+<div class="container">
+
+<div class="card" id="card">
+
+<div class="logo">
+ABC <span>Engineering College</span>
+</div>
+
+<div class="photo">
+<img src="https://i.pravatar.cc/200" alt="Avatar" id="val-avatar">
+</div>
+
+<div class="verify" id="val-verify">
+✔ VERIFIED STUDENT
+</div>
+
+<div class="info">
+<div class="label">Student ID</div>
+<div class="value" id="val-id">CS-2024-4091</div>
+</div>
+
+<div class="info">
+<div class="label">Full Name</div>
+<div class="value" id="val-name">Alex Mercer</div>
+</div>
+
+<div class="info">
+<div class="label">Department</div>
+<div class="value" id="val-dept">Computer Science</div>
+</div>
+
+<div class="info">
+<div class="label">Academic Year</div>
+<div class="value" id="val-year">2024-2025</div>
+</div>
+
+<div class="info">
+<div class="label">Semester</div>
+<div class="value" id="val-semester">6th Semester</div>
+</div>
+
+<div class="info">
+<div class="label">Section</div>
+<div class="value" id="val-section">A</div>
+</div>
+
+<div class="info">
+<div class="label">Blood Group</div>
+<div class="value" id="val-blood">O+</div>
+</div>
+
+<div class="info">
+<div class="label">Phone</div>
+<div class="value" id="val-phone">9876543210</div>
+</div>
+
+<div class="info">
+<div class="label">Email</div>
+<div class="value" id="val-email">alex@college.edu</div>
+</div>
+
+<div class="qr">
+<img id="val-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=CS-2024-4091" alt="QR Code">
+</div>
+
+<div class="footer">
+Student Identity Verification
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+// Query params parsing to make card completely dynamic
+const urlParams = new URLSearchParams(window.location.search);
+
+if (urlParams.has('id')) {
+  document.getElementById('val-id').textContent = urlParams.get('id');
+  document.getElementById('val-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(urlParams.get('id'))}`;
+}
+if (urlParams.has('name')) {
+  document.getElementById('val-name').textContent = urlParams.get('name');
+}
+if (urlParams.has('dept')) {
+  document.getElementById('val-dept').textContent = urlParams.get('dept');
+}
+if (urlParams.has('year')) {
+  document.getElementById('val-year').textContent = urlParams.get('year');
+}
+if (urlParams.has('semester')) {
+  document.getElementById('val-semester').textContent = urlParams.get('semester');
+}
+if (urlParams.has('section')) {
+  document.getElementById('val-section').textContent = urlParams.get('section');
+}
+if (urlParams.has('blood')) {
+  document.getElementById('val-blood').textContent = urlParams.get('blood');
+}
+if (urlParams.has('phone')) {
+  document.getElementById('val-phone').textContent = urlParams.get('phone');
+}
+if (urlParams.has('email')) {
+  document.getElementById('val-email').textContent = urlParams.get('email');
+}
+if (urlParams.has('avatar')) {
+  document.getElementById('val-avatar').src = urlParams.get('avatar');
+} else if (urlParams.has('id')) {
+  const seed = encodeURIComponent(urlParams.get('name') || urlParams.get('id'));
+  document.getElementById('val-avatar').src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${seed}`;
+}
+
+// Adjust roles (Staff / Admin vs Student)
+if (urlParams.has('role')) {
+  const role = urlParams.get('role').toLowerCase();
+  const verifyBadge = document.getElementById('val-verify');
+  if (role === 'staff' || role === 'admin' || role === 'faculty') {
+    verifyBadge.textContent = '✔ VERIFIED STAFF';
+    verifyBadge.style.background = '#f59e0b'; // amber color
+    verifyBadge.style.boxShadow = '0 0 18px #f59e0b';
+  } else {
+    verifyBadge.textContent = '✔ VERIFIED STUDENT';
+    verifyBadge.style.background = '#10b981'; // emerald green
+    verifyBadge.style.boxShadow = '0 0 18px #10b981';
+  }
+}
+
+// 3D Tilt Interaction
+const card = document.getElementById("card");
+
+document.addEventListener("mousemove",(e)=>{
+  const x = (window.innerWidth/2 - e.pageX)/18;
+  const y = (window.innerHeight/2 - e.pageY)/18;
+  card.style.transform = `rotateY(${-x}deg) rotateX(${y}deg)`;
+});
+
+document.addEventListener("mouseleave",()=>{
+  card.style.transform = "rotateY(0deg) rotateX(0deg)";
+});
+
+</script>
+
+</body>
+</html>

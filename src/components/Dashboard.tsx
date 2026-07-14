@@ -113,17 +113,24 @@ export const Dashboard: React.FC = () => {
 
   useEffect(() => {
     if (currentUser) {
-      const qrPayload = {
-        studentId: currentUser.studentId,
-        regNo: currentUser.studentId,
+      const hostUrl = window.location.origin;
+      const yearStr = currentUser.role === 'staff' ? 'Faculty Staff' : (currentUser.semester === '4th Semester' ? '2nd Year' : currentUser.semester === '8th Semester' ? '4th Year' : '3rd Year');
+      const params = new URLSearchParams({
+        id: currentUser.studentId,
         name: currentUser.name,
-        department: currentUser.department,
-        year: currentUser.role === 'staff' ? 'Faculty Staff' : (currentUser.semester === '4th Semester' ? '2nd Year' : currentUser.semester === '8th Semester' ? '4th Year' : '3rd Year'),
-        refreshedAt: new Date().toISOString(),
-        salt: refreshCount
-      };
+        dept: currentUser.department,
+        year: yearStr,
+        semester: currentUser.semester,
+        section: 'A',
+        blood: 'O+',
+        phone: '9876543210',
+        email: currentUser.email,
+        avatar: currentUser.avatarUrl || '',
+        role: currentUser.role
+      });
+      const qrValue = `${hostUrl}/new.html?${params.toString()}`;
 
-      QRCode.toDataURL(JSON.stringify(qrPayload), {
+      QRCode.toDataURL(qrValue, {
         width: 320,
         margin: 2,
         color: {

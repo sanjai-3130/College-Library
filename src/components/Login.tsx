@@ -155,14 +155,27 @@ export const Login: React.FC = () => {
   const handleQrScanSuccess = (decodedText: string) => {
     let regNo = decodedText;
     
-    // Attempt decoding as JSON payload
-    try {
-      const parsed = JSON.parse(decodedText);
-      if (parsed) {
-        regNo = parsed.studentId || parsed.regNo || decodedText;
+    // Check if the decoded text is a URL pointing to new.html
+    if (decodedText.startsWith('http://') || decodedText.startsWith('https://') || decodedText.includes('/new.html')) {
+      try {
+        const url = new URL(decodedText);
+        const urlId = url.searchParams.get('id') || url.searchParams.get('studentId');
+        if (urlId) {
+          regNo = urlId;
+        }
+      } catch (err) {
+        console.warn("Failed to parse QR code as URL, falling back", err);
       }
-    } catch (e) {
-      // String format register numbers
+    } else {
+      // Attempt decoding as JSON payload
+      try {
+        const parsed = JSON.parse(decodedText);
+        if (parsed) {
+          regNo = parsed.studentId || parsed.regNo || decodedText;
+        }
+      } catch (e) {
+        // String format register numbers
+      }
     }
 
     setScannedRegNo(regNo);
@@ -360,15 +373,23 @@ export const Login: React.FC = () => {
 
     try {
       const details = getStudentDetails(studentRegNo);
-      const payload = {
-        studentId: details.regNo,
-        regNo: details.regNo,
+      const hostUrl = window.location.origin;
+      const params = new URLSearchParams({
+        id: details.regNo,
         name: details.name,
-        department: details.dept,
-        year: details.year
-      };
+        dept: details.dept,
+        year: details.year || '3rd Year',
+        semester: details.year && details.year.includes('Semester') ? details.year : '6th Semester',
+        section: 'A',
+        blood: 'O+',
+        phone: '9876543210',
+        email: details.email || `${details.regNo.toLowerCase()}@college.edu`,
+        avatar: details.avatarUrl || '',
+        role: details.role || 'student'
+      });
+      const qrValue = `${hostUrl}/new.html?${params.toString()}`;
 
-      const url = await QRCode.toDataURL(JSON.stringify(payload), {
+      const url = await QRCode.toDataURL(qrValue, {
         width: 320,
         margin: 2,
         color: {
@@ -396,15 +417,23 @@ export const Login: React.FC = () => {
 
     try {
       const details = getStudentDetails(staffId);
-      const payload = {
-        studentId: details.regNo,
-        regNo: details.regNo,
+      const hostUrl = window.location.origin;
+      const params = new URLSearchParams({
+        id: details.regNo,
         name: details.name,
-        department: details.dept,
-        year: 'Faculty Staff'
-      };
+        dept: details.dept,
+        year: 'Faculty Staff',
+        semester: 'Staff Coordinator',
+        section: 'A',
+        blood: 'O+',
+        phone: '9876543210',
+        email: details.email || `${details.regNo.toLowerCase()}@college.edu`,
+        avatar: details.avatarUrl || '',
+        role: details.role || 'staff'
+      });
+      const qrValue = `${hostUrl}/new.html?${params.toString()}`;
 
-      const url = await QRCode.toDataURL(JSON.stringify(payload), {
+      const url = await QRCode.toDataURL(qrValue, {
         width: 320,
         margin: 2,
         color: {
@@ -667,25 +696,7 @@ export const Login: React.FC = () => {
                       )}
                     </div>
 
-                    {/* Student details display */}
-                    <div className="w-full bg-slate-50 border border-slate-200/60 rounded-[20px] p-4 text-xs font-semibold text-slate-700 space-y-2.5">
-                      <div className="flex justify-between border-b border-slate-200/50 pb-2">
-                        <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block font-mono">Student ID / Reg No</span>
-                        <span className="text-slate-800 font-mono">{studentRegNo.toUpperCase()}</span>
-                      </div>
-                      <div className="flex justify-between border-b border-slate-200/50 pb-2">
-                        <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block font-mono">Full Name</span>
-                        <span className="text-slate-800">{getStudentDetails(studentRegNo).name}</span>
-                      </div>
-                      <div className="flex justify-between border-b border-slate-200/50 pb-2">
-                        <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block font-mono">Department</span>
-                        <span className="text-slate-800">{getStudentDetails(studentRegNo).dept}</span>
-                      </div>
-                      <div className="flex justify-between pb-1">
-                        <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block font-mono">Academic Year</span>
-                        <span className="text-slate-800">{getStudentDetails(studentRegNo).year}</span>
-                      </div>
-                    </div>
+                    {/* Removed student details display as requested to focus layout on QR code pass */}
 
                     {/* Actions and redirection */}
                     <div className="w-full flex gap-3">
@@ -795,25 +806,7 @@ export const Login: React.FC = () => {
                       )}
                     </div>
 
-                    {/* Staff details display */}
-                    <div className="w-full bg-slate-50 border border-slate-200/60 rounded-[20px] p-4 text-xs font-semibold text-slate-700 space-y-2.5">
-                      <div className="flex justify-between border-b border-slate-200/50 pb-2">
-                        <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block font-mono">Staff ID</span>
-                        <span className="text-slate-800 font-mono">{staffId.toUpperCase()}</span>
-                      </div>
-                      <div className="flex justify-between border-b border-slate-200/50 pb-2">
-                        <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block font-mono">Full Name</span>
-                        <span className="text-slate-800">{getStudentDetails(staffId).name}</span>
-                      </div>
-                      <div className="flex justify-between border-b border-slate-200/50 pb-2">
-                        <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block font-mono">Department</span>
-                        <span className="text-slate-800">{getStudentDetails(staffId).dept}</span>
-                      </div>
-                      <div className="flex justify-between pb-1">
-                        <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block font-mono">Designation</span>
-                        <span className="text-slate-800">{getStudentDetails(staffId).year}</span>
-                      </div>
-                    </div>
+                    {/* Removed staff details display to maintain consistent design with the student QR pass */}
 
                     {/* Actions and redirection */}
                     <div className="w-full flex gap-3">
