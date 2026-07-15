@@ -3,298 +3,406 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D Student Information Card</title>
+<title>Athena State University - Digital ID Verification</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<!-- Consistent typography fonts matching main web portal -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Poppins',sans-serif;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-body{
-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-background:linear-gradient(135deg,#0f172a,#1e3a8a,#312e81);
-overflow:hidden;
-position:relative;
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f8fafc; /* Consistent bg-slate-50 light theme */
+  overflow-x: hidden;
+  position: relative;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #1e293b;
+  padding: 24px;
 }
 
-body::before{
-content:"";
-position:absolute;
-width:350px;
-height:350px;
-background:#00e5ff55;
-border-radius:50%;
-filter:blur(100px);
-top:-80px;
-left:-80px;
-animation:move1 10s infinite alternate;
-pointer-events:none;
+/* Elegant Blur Background blobs matching login page */
+.blob-1 {
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.08); /* brand-400 / brand-500 tint */
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 1;
 }
 
-body::after{
-content:"";
-position:absolute;
-width:300px;
-height:300px;
-background:#7c3aed55;
-border-radius:50%;
-filter:blur(100px);
-right:-80px;
-bottom:-80px;
-animation:move2 10s infinite alternate;
-pointer-events:none;
+.blob-2 {
+  position: absolute;
+  bottom: -10%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.08); /* indigo-500 tint */
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 1;
 }
 
-@keyframes move1{
-to{
-transform:translate(120px,80px);
-}
-}
-
-@keyframes move2{
-to{
-transform:translate(-120px,-80px);
-}
+.container {
+  perspective: 1200px;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
-.container{
-perspective:1200px;
-z-index: 10;
+/* Glassmorphism ID Card Frame matching the app’s Bento design guidelines */
+.card {
+  width: 100%;
+  max-width: 420px;
+  padding: 32px;
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 
+    0 25px 50px -12px rgba(15, 23, 42, 0.08),
+    0 0 0 1px rgba(15, 23, 42, 0.04);
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out;
+  animation: float-cycle 6s ease-in-out infinite;
 }
 
-.card{
-width:420px;
-padding:30px;
-border-radius:25px;
-background:rgba(255,255,255,.08);
-backdrop-filter:blur(18px);
-border:1px solid rgba(255,255,255,.15);
-box-shadow:
-0 20px 50px rgba(0,0,0,.45),
-0 0 35px rgba(0,255,255,.2);
-transform-style:preserve-3d;
-transition:.15s;
-animation:float 5s ease-in-out infinite;
+@keyframes float-cycle {
+  0%, 100% {
+    transform: translateY(0px) rotateX(0deg) rotateY(0deg);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
-@keyframes float{
-0%,100%{
-transform:translateY(0px);
-}
-50%{
-transform:translateY(-12px);
-}
-}
-
-.logo{
-text-align:center;
-font-size:28px;
-font-weight:700;
-color:white;
+/* Brand header */
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
-.logo span{
-color:#38bdf8;
+.logo-icon {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #2563eb, #4f46e5); /* brand-650 gradient */
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
 }
 
-.photo{
-width:120px;
-height:120px;
-margin:25px auto;
-border-radius:50%;
-overflow:hidden;
-border:5px solid #38bdf8;
-box-shadow:0 0 25px #38bdf8;
-background: rgba(15, 23, 42, 0.4);
+.logo-text {
+  text-align: left;
 }
 
-.photo img{
-width:100%;
-height:100%;
-object-fit:cover;
+.logo-text h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.15;
+  margin: 0;
+  letter-spacing: -0.02em;
 }
 
-.verify{
-margin:10px auto 25px;
-width:max-content;
-padding:8px 18px;
-background:#10b981;
-color:white;
-border-radius:50px;
-font-size:14px;
-font-weight:600;
-box-shadow:0 0 18px #10b981;
-text-transform: uppercase;
-letter-spacing: 0.5px;
+.logo-text span {
+  font-size: 10px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  display: block;
+  margin-top: 2px;
 }
 
-.info{
-display:flex;
-justify-content:space-between;
-padding:13px 0;
-border-bottom:1px solid rgba(255,255,255,.15);
-color:white;
-transition:.3s;
+/* Card Avatar Photo */
+.photo {
+  width: 110px;
+  height: 110px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid white;
+  box-shadow: 
+    0 8px 20px -4px rgba(15, 23, 42, 0.12),
+    0 0 0 2px rgba(37, 99, 235, 0.15);
+  background: #f1f5f9;
 }
 
-.info:hover{
-padding-left:10px;
-background:rgba(255,255,255,.05);
+.photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.label{
-color:#cbd5e1;
-font-size:14px;
+/* Verification Badge */
+.verify {
+  margin: 0 auto 24px;
+  width: max-content;
+  padding: 6px 14px;
+  background: #10b981; /* emerald-500 */
+  color: white;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+  text-transform: uppercase;
+  letter-spacing: 0.75px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.value{
-font-weight:600;
-text-align:right;
+/* Detail Rows styling */
+.info-container {
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 20px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  padding: 6px 14px;
 }
 
-.qr{
-margin-top:25px;
-display:flex;
-justify-content:center;
+.info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+  font-size: 13px;
+  transition: all 0.2s ease;
 }
 
-.qr img{
-width:130px;
-border-radius:15px;
-background:white;
-padding:8px;
+.info:last-of-type {
+  border-bottom: none;
 }
 
-.footer{
-margin-top:15px;
-text-align:center;
-color:#cbd5e1;
-font-size:13px;
+.info:hover {
+  padding-left: 6px;
+  background: rgba(37, 99, 235, 0.03);
+  border-radius: 6px;
 }
 
-/* Back Button */
+.label {
+  color: #64748b;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.value {
+  font-weight: 600;
+  color: #0f172a;
+  text-align: right;
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* QR Code Container styling */
+.qr {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(226, 232, 240, 0.8);
+  display: flex;
+  justify-content: center;
+}
+
+.qr-container {
+  padding: 10px;
+  background: white;
+  border-radius: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.02);
+}
+
+.qr img {
+  width: 96px;
+  height: 96px;
+  display: block;
+}
+
+.footer {
+  margin-top: 16px;
+  text-align: center;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Elegant Back Button pill matching main site */
 .back-btn {
-position: absolute;
-top: 20px;
-left: 20px;
-padding: 10px 20px;
-border-radius: 30px;
-background: rgba(255, 255, 255, 0.1);
-border: 1px solid rgba(255, 255, 255, 0.2);
-color: white;
-font-weight: 500;
-text-decoration: none;
-font-size: 14px;
-transition: all 0.2s;
-z-index: 100;
-display: flex;
-align-items: center;
-gap: 8px;
-backdrop-filter: blur(10px);
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.04);
 }
 
 .back-btn:hover {
-background: rgba(255, 255, 255, 0.2);
-transform: translateX(-3px);
-box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.05);
 }
 
+/* Touch responsiveness optimization */
+@media (max-width: 480px) {
+  body {
+    padding: 16px;
+  }
+  .back-btn {
+    top: 16px;
+    left: 16px;
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+  .card {
+    padding: 24px;
+    border-radius: 28px;
+    margin-top: 48px;
+  }
+}
 </style>
-
 </head>
-
 <body>
 
+<div class="blob-1"></div>
+<div class="blob-2"></div>
+
 <a href="/" class="back-btn">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="19" y1="12" x2="5" y2="12"></line>
+    <polyline points="12 19 5 12 12 5"></polyline>
+  </svg>
   Back to Portal
 </a>
 
 <div class="container">
+  <div class="card" id="card">
+    <!-- Brand Header -->
+    <div class="logo">
+      <div class="logo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <h2>Athena State</h2>
+        <span>University Library</span>
+      </div>
+    </div>
 
-<div class="card" id="card">
+    <!-- Student Photo -->
+    <div class="photo">
+      <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80" alt="Avatar" id="val-avatar">
+    </div>
 
-<div class="logo">
-ABC <span>Engineering College</span>
-</div>
+    <!-- Verification Badge Status -->
+    <div class="verify" id="val-verify">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+      VERIFIED STUDENT
+    </div>
 
-<div class="photo">
-<img src="https://i.pravatar.cc/200" alt="Avatar" id="val-avatar">
-</div>
+    <!-- Dynamic Student Information Table -->
+    <div class="info-container">
+      <div class="info">
+        <div class="label">Student ID</div>
+        <div class="value" id="val-id">CS-2024-4091</div>
+      </div>
 
-<div class="verify" id="val-verify">
-✔ VERIFIED STUDENT
-</div>
+      <div class="info">
+        <div class="label">Full Name</div>
+        <div class="value" id="val-name">Alex Mercer</div>
+      </div>
 
-<div class="info">
-<div class="label">Student ID</div>
-<div class="value" id="val-id">CS-2024-4091</div>
-</div>
+      <div class="info">
+        <div class="label">Department</div>
+        <div class="value" id="val-dept">Computer Science</div>
+      </div>
 
-<div class="info">
-<div class="label">Full Name</div>
-<div class="value" id="val-name">Alex Mercer</div>
-</div>
+      <div class="info">
+        <div class="label">Academic Year</div>
+        <div class="value" id="val-year">2025-2026</div>
+      </div>
 
-<div class="info">
-<div class="label">Department</div>
-<div class="value" id="val-dept">Computer Science</div>
-</div>
+      <div class="info">
+        <div class="label">Semester</div>
+        <div class="value" id="val-semester">6th Semester</div>
+      </div>
 
-<div class="info">
-<div class="label">Academic Year</div>
-<div class="value" id="val-year">2024-2025</div>
-</div>
+      <div class="info">
+        <div class="label">Section</div>
+        <div class="value" id="val-section">A</div>
+      </div>
 
-<div class="info">
-<div class="label">Semester</div>
-<div class="value" id="val-semester">6th Semester</div>
-</div>
+      <div class="info">
+        <div class="label">Blood Group</div>
+        <div class="value" id="val-blood">O+</div>
+      </div>
 
-<div class="info">
-<div class="label">Section</div>
-<div class="value" id="val-section">A</div>
-</div>
+      <div class="info">
+        <div class="label">Phone</div>
+        <div class="value" id="val-phone">9876543210</div>
+      </div>
 
-<div class="info">
-<div class="label">Blood Group</div>
-<div class="value" id="val-blood">O+</div>
-</div>
+      <div class="info">
+        <div class="label">Email</div>
+        <div class="value" id="val-email">alex@college.edu</div>
+      </div>
+    </div>
 
-<div class="info">
-<div class="label">Phone</div>
-<div class="value" id="val-phone">9876543210</div>
-</div>
+    <!-- Scanner Pass Barcode/QR code -->
+    <div class="qr">
+      <div class="qr-container">
+        <img id="val-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=CS-2024-4091" alt="QR Code">
+      </div>
+    </div>
 
-<div class="info">
-<div class="label">Email</div>
-<div class="value" id="val-email">alex@college.edu</div>
-</div>
-
-<div class="qr">
-<img id="val-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=CS-2024-4091" alt="QR Code">
-</div>
-
-<div class="footer">
-Student Identity Verification
-</div>
-
-</div>
-
+    <div class="footer">
+      Digital Library Identity Verification
+    </div>
+  </div>
 </div>
 
 <script>
-
-// Query params parsing to make card completely dynamic
+// Dynamic parameter loader
 const urlParams = new URLSearchParams(window.location.search);
 
 if (urlParams.has('id')) {
@@ -325,41 +433,54 @@ if (urlParams.has('phone')) {
 if (urlParams.has('email')) {
   document.getElementById('val-email').textContent = urlParams.get('email');
 }
-if (urlParams.has('avatar')) {
+
+// Setup verified avatar with dicebear seed fallback
+if (urlParams.has('avatar') && urlParams.get('avatar').trim() !== '') {
   document.getElementById('val-avatar').src = urlParams.get('avatar');
 } else if (urlParams.has('id')) {
   const seed = encodeURIComponent(urlParams.get('name') || urlParams.get('id'));
   document.getElementById('val-avatar').src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${seed}`;
 }
 
-// Adjust roles (Staff / Admin vs Student)
+// Set dynamic roles (Student / Staff / Admin) and colors
 if (urlParams.has('role')) {
   const role = urlParams.get('role').toLowerCase();
   const verifyBadge = document.getElementById('val-verify');
   if (role === 'staff' || role === 'admin' || role === 'faculty') {
-    verifyBadge.textContent = '✔ VERIFIED STAFF';
-    verifyBadge.style.background = '#f59e0b'; // amber color
-    verifyBadge.style.boxShadow = '0 0 18px #f59e0b';
+    verifyBadge.innerHTML = `
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+      VERIFIED STAFF
+    `;
+    verifyBadge.style.background = '#f59e0b'; // Amber gold
+    verifyBadge.style.boxShadow = '0 4px 12px rgba(245, 158, 11, 0.2)';
   } else {
-    verifyBadge.textContent = '✔ VERIFIED STUDENT';
-    verifyBadge.style.background = '#10b981'; // emerald green
-    verifyBadge.style.boxShadow = '0 0 18px #10b981';
+    verifyBadge.innerHTML = `
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+      VERIFIED STUDENT
+    `;
+    verifyBadge.style.background = '#10b981'; // Emerald Green
+    verifyBadge.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.2)';
   }
 }
 
-// 3D Tilt Interaction
+// 3D Gyroscopic & Mouse Tilt Card Interactions
 const card = document.getElementById("card");
 
-document.addEventListener("mousemove",(e)=>{
-  const x = (window.innerWidth/2 - e.pageX)/18;
-  const y = (window.innerHeight/2 - e.pageY)/18;
+document.addEventListener("mousemove", (e) => {
+  const x = (window.innerWidth / 2 - e.pageX) / 20;
+  const y = (window.innerHeight / 2 - e.pageY) / 20;
   card.style.transform = `rotateY(${-x}deg) rotateX(${y}deg)`;
 });
 
-document.addEventListener("mouseleave",()=>{
+document.addEventListener("mouseleave", () => {
   card.style.transform = "rotateY(0deg) rotateX(0deg)";
 });
-
 </script>
 
 </body>
