@@ -70,7 +70,9 @@ export const QRScanner: React.FC = () => {
       avatar: detail.avatarUrl || '',
       role: detail.roleType || 'student'
     });
-    window.location.href = `/new.html?${params.toString()}`;
+    const isStaffOrAdmin = detail.roleType === 'staff' || detail.roleType === 'admin';
+    const pathName = isStaffOrAdmin ? 'staffnew.html' : 'new.html';
+    window.location.href = `/${pathName}?${params.toString()}`;
   };
 
   const simulateScan = (type: 'book' | 'student', codeId: string) => {

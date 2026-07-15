@@ -24,6 +24,7 @@ export default defineConfig(() => {
         input: {
           main: path.resolve(__dirname, 'index.html'),
           new: path.resolve(__dirname, 'new.html'),
+          staffnew: path.resolve(__dirname, 'staffnew.html'),
         },
       },
     },

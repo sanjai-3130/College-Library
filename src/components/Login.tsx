@@ -155,8 +155,8 @@ export const Login: React.FC = () => {
   const handleQrScanSuccess = (decodedText: string) => {
     let regNo = decodedText;
     
-    // Check if the decoded text is a URL pointing to new.html
-    if (decodedText.startsWith('http://') || decodedText.startsWith('https://') || decodedText.includes('/new.html')) {
+    // Check if the decoded text is a URL pointing to new.html or staffnew.html
+    if (decodedText.startsWith('http://') || decodedText.startsWith('https://') || decodedText.includes('/new.html') || decodedText.includes('/staffnew.html')) {
       try {
         const url = new URL(decodedText);
         const urlId = url.searchParams.get('id') || url.searchParams.get('studentId');
@@ -431,7 +431,7 @@ export const Login: React.FC = () => {
         avatar: details.avatarUrl || '',
         role: details.role || 'staff'
       });
-      const qrValue = `${hostUrl}/new.html?${params.toString()}`;
+      const qrValue = `${hostUrl}/staffnew.html?${params.toString()}`;
 
       const url = await QRCode.toDataURL(qrValue, {
         width: 320,

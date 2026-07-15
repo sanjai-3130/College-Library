@@ -128,7 +128,9 @@ export const Dashboard: React.FC = () => {
         avatar: currentUser.avatarUrl || '',
         role: currentUser.role
       });
-      const qrValue = `${hostUrl}/new.html?${params.toString()}`;
+      const isStaffOrAdmin = currentUser.role === 'staff' || currentUser.role === 'admin';
+      const pathName = isStaffOrAdmin ? 'staffnew.html' : 'new.html';
+      const qrValue = `${hostUrl}/${pathName}?${params.toString()}`;
 
       QRCode.toDataURL(qrValue, {
         width: 320,
