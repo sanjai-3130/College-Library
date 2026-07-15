@@ -1,19 +1,28 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import tailwindcss from '@tailwindcss/vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+import { defineConfig } from 'vite';
 
-export default defineConfig({
-  plugins: [react()],
+export default defineConfig(() => {
+  return {
+    plugins: [react(), tailwindcss()],
 
-  server: {
-    host: "0.0.0.0",
-    port: 3000
-  },
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, '.'),
+      },
+    },
 
-  preview: {
-    host: "0.0.0.0",
-    port: 4173,
-    allowedHosts: [
-      "college-library-pldk.onrender.com"
-    ]
-  }
+    server: {
+      host: true,
+      hmr: process.env.DISABLE_HMR !== 'true',
+      watch: process.env.DISABLE_HMR === 'true' ? null : {},
+    },
+
+    preview: {
+      host: true,
+      port: process.env.PORT || 4173,
+      allowedHosts: true,
+    },
+  };
 });
