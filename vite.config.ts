@@ -19,6 +19,15 @@ export default defineConfig(() => {
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
 
+    build: {
+      rollupOptions: {
+        input: {
+          main: path.resolve(__dirname, 'index.html'),
+          new: path.resolve(__dirname, 'new.html'),
+        },
+      },
+    },
+
     preview: {
       host: true,
       port: process.env.PORT ? parseInt(process.env.PORT, 10) : 4173,
